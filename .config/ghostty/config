@@ -6,5 +6,48 @@ theme = tokyonight
 window-padding-x = 4
 window-padding-y = 4
 
+fullscreen = true
+
 # tmux を自動起動
 command = $SHELL -lc "tmux new-session -A -s main"
+
+# Ghosttyのタブ・分割を無効化（tmuxで管理）
+keybind = super+d=unbind
+keybind = super+shift+d=unbind
+keybind = super+w=text:\x1c&
+keybind = super+alt+w=unbind
+keybind = super+shift+w=unbind
+keybind = super+bracket_left=unbind
+keybind = super+bracket_right=unbind
+keybind = super+alt+arrow_up=unbind
+keybind = super+alt+arrow_down=unbind
+keybind = super+alt+arrow_left=unbind
+keybind = super+alt+arrow_right=unbind
+keybind = super+ctrl+arrow_up=unbind
+keybind = super+ctrl+arrow_down=unbind
+keybind = super+ctrl+arrow_left=unbind
+keybind = super+ctrl+arrow_right=unbind
+keybind = super+ctrl+equal=unbind
+keybind = super+shift+enter=unbind
+keybind = super+n=unbind
+keybind = super+1=unbind
+keybind = super+2=unbind
+keybind = super+3=unbind
+keybind = super+4=unbind
+keybind = super+5=unbind
+keybind = super+6=unbind
+keybind = super+7=unbind
+keybind = super+8=unbind
+keybind = super+9=unbind
+keybind = ctrl+tab=unbind
+keybind = ctrl+shift+tab=unbind
+
+# tmux 操作
+keybind = super+t=text:\x1cc
+keybind = super+shift+bracket_left=text:\x1cp
+keybind = super+shift+bracket_right=text:\x1cn
+keybind = super+d=text:\x1c|
+keybind = super+shift+d=text:\x1c-
+keybind = super+r=text:\x1cr
+keybind = super+s=text:\x1cs
+keybind = super+backslash=text:\x1cz
