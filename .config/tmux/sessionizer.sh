@@ -1,5 +1,4 @@
-#!/bin/bash
-export PATH="/opt/homebrew/bin:$PATH"
+#!/usr/bin/env bash
 selected=$(ghq list | fzf --prompt='project> ')
 [ -z "$selected" ] && exit 0
 

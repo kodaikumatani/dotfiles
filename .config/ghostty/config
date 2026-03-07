@@ -7,4 +7,4 @@ window-padding-x = 4
 window-padding-y = 4
 
 # tmux を自動起動
-command = /opt/homebrew/bin/tmux new-session -A -s main
+command = $SHELL -lc "tmux new-session -A -s main"
