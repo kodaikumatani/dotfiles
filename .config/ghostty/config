@@ -1,0 +1,10 @@
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+
+theme = tokyonight
+
+window-padding-x = 4
+window-padding-y = 4
+
+# tmux を自動起動
+command = /opt/homebrew/bin/tmux new-session -A -s main
