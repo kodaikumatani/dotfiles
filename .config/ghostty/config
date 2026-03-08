@@ -49,6 +49,6 @@ keybind = super+shift+bracket_left=text:\x1cp
 keybind = super+shift+bracket_right=text:\x1cn
 keybind = super+d=text:\x1c|
 keybind = super+shift+d=text:\x1c-
-keybind = super+r=text:\x1cr
+keybind = super+p=text:\x1cr
 keybind = super+s=text:\x1cs
 keybind = super+backslash=text:\x1cz
