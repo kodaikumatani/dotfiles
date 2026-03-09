@@ -22,7 +22,7 @@ require("config.lazy")
 vim.cmd.colorscheme("tokyonight")
 
 -- キーマップ
-vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>")
+vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>")
 
 -- Neovim内蔵ターミナルを無効化（tmuxを使用）
 vim.api.nvim_create_user_command("Terminal", function() vim.notify("Use tmux instead", vim.log.levels.WARN) end, {})
