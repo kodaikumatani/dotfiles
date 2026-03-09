@@ -22,7 +22,7 @@ require("config.lazy")
 vim.cmd.colorscheme("tokyonight")
 
 -- キーマップ
-vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>")
+vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>")
 
 -- 矢印キーでの移動を無効化（hjkl を使う）
 local arrow_keys = { "<Up>", "<Down>", "<Left>", "<Right>" }
