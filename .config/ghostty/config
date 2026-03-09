@@ -11,6 +11,7 @@ fullscreen = true
 
 # tmux を自動起動
 command = $SHELL -lc "tmux new-session -A -s main"
+wait-after-command = true
 
 # Ghosttyのタブ・分割を無効化（tmuxで管理）
 keybind = super+d=unbind
