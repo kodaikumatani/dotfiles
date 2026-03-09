@@ -6,7 +6,7 @@ My configuration files managed with symlinks.
 
 ```bash
 # Install dependencies (macOS)
-brew install tmux ghq fzf
+brew install tmux ghq fzf starship
 
 # Create symlinks
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/ghostty ~/.config/ghostty
@@ -22,6 +22,7 @@ echo 'source ~/.config/zsh/git-ghq.zsh' >> ~/.zshrc
 - `.config/ghostty/` - Ghostty terminal config
 - `.config/tmux/` - tmux config + sessionizer
 - `.config/zsh/` - zsh functions
+- `.config/starship.toml` - Starship prompt config
 
 ## Shortcuts
 
