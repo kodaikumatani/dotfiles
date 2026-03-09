@@ -6,11 +6,12 @@ My configuration files managed with symlinks.
 
 ```bash
 # Install dependencies (macOS)
-brew install tmux ghq fzf starship
+brew install tmux ghq fzf ripgrep starship
 
 # Create symlinks
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/ghostty ~/.config/ghostty
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/tmux ~/.config/tmux
+ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/nvim ~/.config/nvim
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/zsh ~/.config/zsh
 
 # Load zsh config
@@ -20,6 +21,7 @@ echo 'source ~/.config/zsh/git-ghq.zsh' >> ~/.zshrc
 ## Structure
 
 - `.config/ghostty/` - Ghostty terminal config
+- `.config/nvim/` - Neovim config
 - `.config/tmux/` - tmux config + sessionizer
 - `.config/zsh/` - zsh functions
 - `.config/starship.toml` - Starship prompt config
