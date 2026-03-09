@@ -2,10 +2,26 @@
 
 My configuration files managed with symlinks.
 
+## Setup
+
+```bash
+# Install dependencies (macOS)
+brew install tmux ghq fzf
+
+# Create symlinks
+ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/ghostty ~/.config/ghostty
+ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/tmux ~/.config/tmux
+ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/zsh ~/.config/zsh
+
+# Load zsh config
+echo 'source ~/.config/zsh/git-ghq.zsh' >> ~/.zshrc
+```
+
 ## Structure
 
 - `.config/ghostty/` - Ghostty terminal config
 - `.config/tmux/` - tmux config + sessionizer
+- `.config/zsh/` - zsh functions
 
 ## Shortcuts
 
