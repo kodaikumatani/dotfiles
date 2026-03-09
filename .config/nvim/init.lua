@@ -24,6 +24,15 @@ vim.cmd.colorscheme("tokyonight")
 -- キーマップ
 vim.keymap.set("n", "<leader>e", ":Neotree toggle<CR>")
 
+-- 矢印キーでの移動を無効化（hjkl を使う）
+local arrow_keys = { "<Up>", "<Down>", "<Left>", "<Right>" }
+local modes = { "n", "i", "v" }
+for _, key in ipairs(arrow_keys) do
+  for _, mode in ipairs(modes) do
+    vim.keymap.set(mode, key, "<Nop>")
+  end
+end
+
 -- Neovim内蔵ターミナルを無効化（tmuxを使用）
 vim.api.nvim_create_user_command("Terminal", function() vim.notify("Use tmux instead", vim.log.levels.WARN) end, {})
 
