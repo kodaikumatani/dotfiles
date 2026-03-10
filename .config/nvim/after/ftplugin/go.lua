@@ -42,7 +42,8 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     if #clients == 0 then return end
 
     -- import を整理
-    local ok, params = pcall(vim.lsp.util.make_range_params)
+    local client = clients[1]
+    local ok, params = pcall(vim.lsp.util.make_range_params, 0, client.offset_encoding)
     if not ok then return end
     params.context = { only = { "source.organizeImports" } }
     local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
