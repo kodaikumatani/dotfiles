@@ -4,12 +4,7 @@ return {
   lazy = false,
   priority = 100,
   config = function()
-    local status_ok, configs = pcall(require, "nvim-treesitter.configs")
-    if not status_ok then
-      return
-    end
-
-    configs.setup({
+    require("nvim-treesitter").setup({
       ensure_installed = {
         "go",
         "lua",
@@ -21,12 +16,12 @@ return {
         "markdown",
         "markdown_inline",
       },
-      highlight = {
-        enable = true,
-      },
-      indent = {
-        enable = true,
-      },
+    })
+
+    vim.api.nvim_create_autocmd("FileType", {
+      callback = function()
+        pcall(vim.treesitter.start)
+      end,
     })
   end,
 }
