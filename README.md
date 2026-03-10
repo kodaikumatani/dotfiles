@@ -14,6 +14,9 @@ ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/tmux ~/.config/tmux
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/nvim ~/.config/nvim
 ln -sf ~/ghq/github.com/kodaikumatani/dotfiles/.config/zsh ~/.config/zsh
 
+# Install neovim via mise (version managed in .config/mise/config.toml)
+mise use -g neovim@0.11.6
+
 # Load zsh config
 echo 'source ~/.config/zsh/git-ghq.zsh' >> ~/.zshrc
 ```
