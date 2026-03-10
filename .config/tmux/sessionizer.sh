@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
 selected=$(ghq list | fzf --prompt='project> ')
 [ -z "$selected" ] && exit 0
 
@@ -10,7 +12,7 @@ if tmux has-session -t="$name" 2>/dev/null; then
   tmux switch-client -t "$name"
 else
   tmux new-session -d -s "$name" -c "$dir"
-  tmux split-window -h -t "$name" -c "$dir" "nvim --listen $sock"
+  tmux split-window -h -t "$name" -c "$dir" "nvim --listen $sock; echo 'nvim exited with code '$?; read"
   tmux select-pane -t "$name":1.0
   tmux switch-client -t "$name"
 fi
