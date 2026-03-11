@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-export PATH="$HOME/.local/share/mise/shims:$PATH"
-
 selected=$(ghq list | fzf --prompt='project> ')
 [ -z "$selected" ] && exit 0
 
