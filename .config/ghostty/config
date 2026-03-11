@@ -10,7 +10,7 @@ window-padding-y = 4
 fullscreen = true
 
 # tmux を自動起動
-command = $SHELL -lc "tmux new-session -A -s main; tmux kill-server"
+command = $SHELL -lc "trap 'tmux kill-server' HUP EXIT; tmux new-session -A -s main"
 
 # Ghosttyのタブ・分割を無効化（tmuxで管理）
 keybind = super+d=unbind
