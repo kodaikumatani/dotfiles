@@ -30,8 +30,10 @@ vim.lsp.config.gopls = {
   },
 }
 
--- LSP自動起動
-vim.lsp.enable("gopls")
+-- LSP自動起動 (goplsが見つかる場合のみ)
+if vim.fn.executable("gopls") == 1 then
+  vim.lsp.enable("gopls")
+end
 
 -- 保存時にimportを整理してフォーマット
 vim.api.nvim_create_autocmd("BufWritePre", {

@@ -5,6 +5,9 @@ if vim.fn.has("nvim-0.11.6") == 0 then
   }, true, {})
 end
 
+-- mise の PATH を設定（Go、goplsなどのツールを使用可能にする）
+vim.env.PATH = vim.env.HOME .. "/.local/share/mise/shims:" .. vim.env.PATH
+
 -- Leader key
 vim.g.mapleader = " "
 
