@@ -30,6 +30,6 @@ else
   right_pane=$(tmux split-window -h -t "$name" -c "$dir" -P -F "#{pane_id}")
   tmux send-keys -t "$right_pane" "nvim --server $sock --remote-ui" Enter
   tmux select-pane -t "$right_pane"
-  tmux set-hook -t "$name" session-closed "run-shell 'kill \$(lsof -t $sock) 2>/dev/null; rm -f $sock'"
+  tmux set-hook -t "$name" session-closed "run-shell 'tmux has-session -t=\"$name\" 2>/dev/null || { kill \$(lsof -t $sock) 2>/dev/null; rm -f $sock; }'"
   tmux switch-client -t "$name"
 fi
