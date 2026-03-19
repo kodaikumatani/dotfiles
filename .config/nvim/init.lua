@@ -31,6 +31,12 @@ vim.cmd.colorscheme("tokyonight")
 -- キーマップ
 vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>")
 
+-- split間の移動（tmux連携: tmux側でnvim検知時にキーをパススルーする）
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+
 -- 矢印キーでの移動を無効化（hjkl を使う）
 local arrow_keys = { "<Up>", "<Down>", "<Left>", "<Right>" }
 local modes = { "n", "i", "v" }
@@ -68,7 +74,7 @@ vim.keymap.set('n', '<leader>fp', function()
   })
 end, { desc = 'プロジェクト切り替え' })
 
--- 最後のウィンドウで :q しても Neovide が終了しないようにする
+-- 最後のウィンドウで :q しても Neovim が終了しないようにする
 -- 最後の1枚のときは空バッファを開く（終了したいときは :qa）
 vim.cmd([[cnoreabbrev <expr> q (tabpagenr('$') == 1 && winnr('$') == 1) ? 'enew' : 'q']])
 
