@@ -57,3 +57,10 @@ All tmux operations are mapped to Cmd keys via Ghostty keybindings.
 |--------|-----|
 | Project switcher (ghq+fzf) | `Cmd+R` |
 | Session list | `Cmd+S` |
+
+### tmux
+
+| Action | Key |
+|--------|-----|
+| Command line | `Ctrl+\ :` |
+| Reload config | `Ctrl+\ :` → `source ~/.config/tmux/tmux.conf` |
