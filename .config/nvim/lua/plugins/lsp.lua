@@ -120,6 +120,9 @@ return {
             },
           },
         },
+        terraformls = {
+          filetypes = { "terraform", "hcl" },
+        },
       }
 
       -- 全サーバーを設定・有効化（vim.lsp.enable は対応filetypeのバッファが開かれた時に自動起動する）

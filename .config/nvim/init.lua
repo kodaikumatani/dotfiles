@@ -31,11 +31,20 @@ vim.cmd.colorscheme("tokyonight")
 -- キーマップ
 vim.keymap.set("n", "<leader>e", ":Neotree toggle reveal<CR>")
 
--- split間の移動（tmux連携: tmux側でnvim検知時にキーをパススルーする）
+-- split間の移動（tmux連携: zoom中はnvim split移動）
 vim.keymap.set("n", "<C-h>", "<C-w>h")
 vim.keymap.set("n", "<C-j>", "<C-w>j")
 vim.keymap.set("n", "<C-k>", "<C-w>k")
 vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+-- nvimでsplit時に自動でtmux zoomに入る
+vim.api.nvim_create_autocmd("WinNew", {
+  callback = function()
+    if vim.env.TMUX then
+      vim.fn.system("tmux resize-pane -Z")
+    end
+  end,
+})
 
 -- 矢印キーでの移動を無効化（hjkl を使う）
 local arrow_keys = { "<Up>", "<Down>", "<Left>", "<Right>" }
@@ -74,9 +83,19 @@ vim.keymap.set('n', '<leader>fp', function()
   })
 end, { desc = 'プロジェクト切り替え' })
 
--- 最後のウィンドウで :q しても Neovim が終了しないようにする
+-- 最後のウィンドウで :q / :bd しても Neovim が終了しないようにする
 -- 最後の1枚のときは空バッファを開く（終了したいときは :qa）
-vim.cmd([[cnoreabbrev <expr> q (tabpagenr('$') == 1 && winnr('$') == 1) ? 'enew' : 'q']])
+vim.api.nvim_create_autocmd("QuitPre", {
+  callback = function()
+    -- 通常ウィンドウ（floating除外）をカウント
+    local wins = vim.tbl_filter(function(w)
+      return vim.api.nvim_win_get_config(w).relative == ""
+    end, vim.api.nvim_list_wins())
+    if #wins <= 1 then
+      vim.cmd("enew")
+    end
+  end,
+})
 
 -- 外部でファイルが変更されたら自動的に読み直す (autoread)
 vim.opt.autoread = true
