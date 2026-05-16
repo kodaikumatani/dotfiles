@@ -12,4 +12,6 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   -- lua/plugins ディレクトリから自動的にプラグインを読み込む
   { import = "plugins" },
+}, {
+  lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json",
 })
