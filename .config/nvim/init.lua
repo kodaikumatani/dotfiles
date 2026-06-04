@@ -60,8 +60,41 @@ vim.api.nvim_create_user_command("Terminal", function() vim.notify("Use tmux ins
 
 -- Telescope (曖昧検索)
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'ファイル検索' })
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'テキスト検索' })
+local project_root_markers = {
+  "package.json",
+  "go.mod",
+  "Cargo.toml",
+  "pyproject.toml",
+  "Makefile",
+}
+
+local function telescope_search_root()
+  local buf_name = vim.api.nvim_buf_get_name(0)
+  local start_path = buf_name ~= "" and buf_name or vim.fn.getcwd()
+
+  local git_root = vim.fs.root(start_path, ".git")
+  if git_root then
+    return git_root
+  end
+
+  local marker_root = vim.fs.root(start_path, project_root_markers)
+  if marker_root then
+    return marker_root
+  end
+
+  if buf_name ~= "" then
+    return vim.fs.dirname(buf_name)
+  end
+
+  return vim.fn.getcwd()
+end
+
+vim.keymap.set('n', '<leader>ff', function()
+  builtin.find_files({ cwd = telescope_search_root() })
+end, { desc = 'ファイル検索' })
+vim.keymap.set('n', '<leader>fg', function()
+  builtin.live_grep({ cwd = telescope_search_root() })
+end, { desc = 'テキスト検索' })
 vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'バッファ検索' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'ヘルプ検索' })
 vim.keymap.set('n', '<leader>fr', builtin.oldfiles, { desc = '最近開いたファイル' })
