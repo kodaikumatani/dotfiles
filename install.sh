@@ -35,8 +35,7 @@ link() {
 }
 
 log "Linking config files..."
-link "$DOTFILES/.config/ghostty"      "$HOME/.config/ghostty"
-link "$DOTFILES/.config/tmux"         "$HOME/.config/tmux"
+link "$DOTFILES/.config/wezterm"      "$HOME/.config/wezterm"
 link "$DOTFILES/.config/nvim"         "$HOME/.config/nvim"
 link "$DOTFILES/.config/zsh"          "$HOME/.config/zsh"
 link "$DOTFILES/.config/starship.toml" "$HOME/.config/starship.toml"

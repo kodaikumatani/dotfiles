@@ -5,12 +5,6 @@ local map = vim.keymap.set
 -- ファイルツリー
 map("n", "<leader>e", ":Neotree toggle reveal<CR>", { desc = "ファイルツリー切替" })
 
--- split 間の移動（tmux 連携: zoom 中は nvim split を移動する）
-map("n", "<C-h>", "<C-w>h")
-map("n", "<C-j>", "<C-w>j")
-map("n", "<C-k>", "<C-w>k")
-map("n", "<C-l>", "<C-w>l")
-
 -- 矢印キーを無効化（hjkl を使う）
 for _, key in ipairs({ "<Up>", "<Down>", "<Left>", "<Right>" }) do
   for _, mode in ipairs({ "n", "i", "v" }) do
