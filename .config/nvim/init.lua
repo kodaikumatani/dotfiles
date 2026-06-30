@@ -17,4 +17,4 @@ require("config.lazy")
 require("config.keymaps")
 require("config.autocmds")
 
--- カラースキームは設定しない（既定スキーム + cterm 色で端末の配色に追従する）
+vim.cmd.colorscheme("kanagawa")

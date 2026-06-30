@@ -13,8 +13,7 @@ opt.tabstop = 2
 opt.smartindent = true
 
 -- 表示
--- termguicolors を切り、端末（WezTerm）の 16色 ANSI パレットに追従させる
-opt.termguicolors = false
+opt.termguicolors = true
 opt.signcolumn = "yes"
 
 -- クリップボード共有

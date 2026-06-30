@@ -4,7 +4,7 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
     options = {
-      theme = "16color", -- 端末の ANSI 色に追従
+      theme = "auto", -- kanagawa を自動反映
       component_separators = { left = "|", right = "|" },
       section_separators = { left = "", right = "" },
     },
