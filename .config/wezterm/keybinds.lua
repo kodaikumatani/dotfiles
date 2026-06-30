@@ -2,6 +2,7 @@
 -- 既定のキーバインドは全て無効化し、ここで定義したものだけを有効にする。
 local wezterm = require("wezterm")
 local act = wezterm.action
+local sessions = require("sessions")
 
 local M = {}
 
@@ -17,6 +18,8 @@ function M.apply(config)
     { key = "x", mods = "CTRL|SHIFT", action = act.ActivateCopyMode },
     { key = "n", mods = "CMD", action = act.SpawnWindow },
     { key = "q", mods = "CMD", action = act.QuitApplication },
+    -- ghq プロジェクト切り替え（workspace = セッション）
+    { key = "p", mods = "CMD", action = sessions.switch_project() },
     -- フォントサイズ
     { key = "=", mods = "CMD", action = act.IncreaseFontSize },
     { key = "-", mods = "CMD", action = act.DecreaseFontSize },

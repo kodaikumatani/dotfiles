@@ -4,7 +4,7 @@ local wezterm = require("wezterm")
 local M = {}
 
 function M.apply(config)
-  config.color_scheme = "Tokyo Night"
+  config.color_scheme = "Dracula"
   config.font = wezterm.font_with_fallback({
     "JetBrainsMono Nerd Font",
     "Noto Sans JP",
