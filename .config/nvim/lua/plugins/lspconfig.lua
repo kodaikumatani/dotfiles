@@ -40,10 +40,9 @@ return {
       -- LSP がアタッチしたバッファだけに適用（言語非依存）
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
-          local opts = { buffer = args.buf }
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          vim.keymap.set("n", "gl", vim.diagnostic.open_float, opts)
-          -- K(hover) / grn(rename) / gra(code action) / grr(references) は Neovim 0.11 既定
+          -- 定義ジャンプの既定は無いので gd だけ追加（<C-]> でも可）
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = args.buf })
+          -- K / grn / gra / grr / gri / grt / gO / <C-W>d / [d ]d / <C-S> は Neovim 0.11 既定
 
           -- 0.11 ネイティブ補完を自動トリガで有効化（nvim-cmp 不要）
           local client = vim.lsp.get_client_by_id(args.data.client_id)
