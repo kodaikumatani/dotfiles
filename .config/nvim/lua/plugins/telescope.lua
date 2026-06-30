@@ -1,11 +1,14 @@
 return {
   "nvim-telescope/telescope.nvim",
+  cmd = "Telescope",
+  -- キーマップは config/keymaps.lua で定義（最初の <leader>f* で遅延読み込みされる）
   dependencies = {
     "nvim-lua/plenary.nvim",
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
   },
   config = function()
-    require('telescope').setup({
+    local telescope = require("telescope")
+    telescope.setup({
       defaults = {
         file_ignore_patterns = { "node_modules", ".git/" },
         mappings = {
@@ -18,11 +21,10 @@ return {
       pickers = {
         find_files = {
           hidden = true, -- 隠しファイルを表示
-          no_ignore = false, -- .gitignoreを尊重
+          no_ignore = false, -- .gitignore を尊重
         },
       },
     })
-    -- fzf拡張を読み込み
-    require('telescope').load_extension('fzf')
+    telescope.load_extension("fzf")
   end,
 }

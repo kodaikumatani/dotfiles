@@ -1,6 +1,7 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
   branch = "v3.x",
+  cmd = "Neotree",
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-tree/nvim-web-devicons",
@@ -10,7 +11,7 @@ return {
     window = {
       position = "float",
     },
-    -- ターミナルなど特定のウィンドウを除外
+    -- ターミナルなど特定のウィンドウを置き換えない
     open_files_do_not_replace_types = { "terminal", "trouble", "qf" },
     default_component_configs = {
       git_status = {
