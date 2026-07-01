@@ -15,4 +15,6 @@ require("lazy").setup({
   { import = "plugins" },
 }, {
   change_detection = { notify = false },
+  -- lazy-lock.json を stdpath(data) へ（Nix 互換）
+  lockfile = vim.fn.stdpath("data") .. "/lazy-lock.json",
 })
