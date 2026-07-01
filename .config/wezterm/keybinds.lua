@@ -2,7 +2,7 @@
 -- 既定のキーバインドは全て無効化し、ここで定義したものだけを有効にする。
 local wezterm = require("wezterm")
 local act = wezterm.action
-local sessions = require("sessions")
+local workspace = require("workspace")
 
 local M = {}
 
@@ -19,11 +19,9 @@ function M.apply(config)
     { key = "n", mods = "CMD", action = act.SpawnWindow },
     { key = "q", mods = "CMD", action = act.QuitApplication },
     -- プロジェクトディレクトリを選んで workspace 化（作成/切替）
-    { key = "p", mods = "CMD", action = wezterm.action_callback(sessions.select_dir) },
+    { key = "p", mods = "CMD", action = wezterm.action_callback(workspace.select_dir) },
     -- 開いている workspace 一覧から切替
-    { key = "s", mods = "CMD", action = wezterm.action_callback(sessions.switch_workspace) },
-    -- workspace を kill
-    { key = "s", mods = "CMD|SHIFT", action = wezterm.action_callback(sessions.kill_workspace) },
+    { key = "s", mods = "CMD", action = wezterm.action_callback(workspace.switch_workspace) },
     -- フォントサイズ
     { key = "=", mods = "CMD", action = act.IncreaseFontSize },
     { key = "-", mods = "CMD", action = act.DecreaseFontSize },

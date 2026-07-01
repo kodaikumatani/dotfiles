@@ -72,44 +72,4 @@ function M.switch_workspace(win, pane)
   )
 end
 
--- workspace を選んで kill する（その workspace の全ペインを閉じる）
--- 現在いる workspace は安全のため候補から除外
-function M.kill_workspace(win, pane)
-  local current = win:active_workspace()
-  local choices = {}
-  for _, name in ipairs(wezterm.mux.get_workspace_names()) do
-    if name ~= current then
-      choices[#choices + 1] = { id = name, label = name }
-    end
-  end
-  if #choices == 0 then
-    win:toast_notification("wezterm", "kill できる workspace がありません（現在の workspace は対象外）", nil, 4000)
-    return
-  end
-  win:perform_action(
-    act.InputSelector({
-      title = "Kill workspace (j/k, / to filter)",
-      choices = choices,
-      fuzzy = false,
-      action = wezterm.action_callback(function(_, _, id)
-        if not id then
-          return
-        end
-        -- 対象 workspace の全ペインを CLI で kill
-        local shell = os.getenv("SHELL") or "/bin/zsh"
-        local ok, stdout = wezterm.run_child_process({ shell, "-lc", "wezterm cli list --format json" })
-        if not ok then
-          return
-        end
-        for _, p in ipairs(wezterm.json_parse(stdout)) do
-          if p.workspace == id then
-            wezterm.run_child_process({ shell, "-lc", "wezterm cli kill-pane --pane-id " .. p.pane_id })
-          end
-        end
-      end),
-    }),
-    pane
-  )
-end
-
 return M
