@@ -18,8 +18,8 @@ function M.apply(config)
     { key = "x", mods = "CTRL|SHIFT", action = act.ActivateCopyMode },
     { key = "n", mods = "CMD", action = act.SpawnWindow },
     { key = "q", mods = "CMD", action = act.QuitApplication },
-    -- 現在の作業ディレクトリを workspace にして切替（無ければ作成）
-    { key = "p", mods = "CMD", action = wezterm.action_callback(sessions.create_or_switch) },
+    -- プロジェクトディレクトリを選んで workspace 化（作成/切替）
+    { key = "p", mods = "CMD", action = wezterm.action_callback(sessions.select_dir) },
     -- フォントサイズ
     { key = "=", mods = "CMD", action = act.IncreaseFontSize },
     { key = "-", mods = "CMD", action = act.DecreaseFontSize },
