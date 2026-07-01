@@ -25,7 +25,7 @@ local function list_project_dirs()
   return dirs
 end
 
--- ディレクトリを一覧から選び、そのディレクトリで workspace を作成・切替する
+-- プロジェクトディレクトリを一覧から選び、そのディレクトリで workspace を作成・切替する
 function M.select_dir(win, pane)
   local choices = {}
   for _, path in ipairs(list_project_dirs()) do
@@ -34,15 +34,36 @@ function M.select_dir(win, pane)
   end
   win:perform_action(
     act.InputSelector({
-      title = "Select project directory",
+      title = "Open project",
       choices = choices,
       fuzzy = true,
-      action = wezterm.action_callback(function(_, _, id, label)
+      action = wezterm.action_callback(function(inner_win, inner_pane, id, label)
         if id then
-          win:perform_action(
+          inner_win:perform_action(
             act.SwitchToWorkspace({ name = label, spawn = { cwd = id } }),
-            pane
+            inner_pane
           )
+        end
+      end),
+    }),
+    pane
+  )
+end
+
+-- 開いている workspace の一覧から選んで切り替える
+function M.switch_workspace(win, pane)
+  local choices = {}
+  for i, name in ipairs(wezterm.mux.get_workspace_names()) do
+    choices[#choices + 1] = { id = name, label = string.format("%d. %s", i, name) }
+  end
+  win:perform_action(
+    act.InputSelector({
+      title = "Switch workspace",
+      choices = choices,
+      fuzzy = true,
+      action = wezterm.action_callback(function(inner_win, inner_pane, id)
+        if id then
+          inner_win:perform_action(act.SwitchToWorkspace({ name = id }), inner_pane)
         end
       end),
     }),

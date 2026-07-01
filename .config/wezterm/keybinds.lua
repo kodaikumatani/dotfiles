@@ -20,6 +20,8 @@ function M.apply(config)
     { key = "q", mods = "CMD", action = act.QuitApplication },
     -- プロジェクトディレクトリを選んで workspace 化（作成/切替）
     { key = "p", mods = "CMD", action = wezterm.action_callback(sessions.select_dir) },
+    -- 開いている workspace 一覧から切替
+    { key = "s", mods = "CMD", action = wezterm.action_callback(sessions.switch_workspace) },
     -- フォントサイズ
     { key = "=", mods = "CMD", action = act.IncreaseFontSize },
     { key = "-", mods = "CMD", action = act.DecreaseFontSize },
