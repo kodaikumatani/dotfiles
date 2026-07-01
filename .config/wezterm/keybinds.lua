@@ -22,6 +22,8 @@ function M.apply(config)
     { key = "p", mods = "CMD", action = wezterm.action_callback(sessions.select_dir) },
     -- 開いている workspace 一覧から切替
     { key = "s", mods = "CMD", action = wezterm.action_callback(sessions.switch_workspace) },
+    -- workspace を kill
+    { key = "s", mods = "CMD|SHIFT", action = wezterm.action_callback(sessions.kill_workspace) },
     -- フォントサイズ
     { key = "=", mods = "CMD", action = act.IncreaseFontSize },
     { key = "-", mods = "CMD", action = act.DecreaseFontSize },
