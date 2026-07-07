@@ -50,6 +50,51 @@ function M.select_dir(win, pane)
   )
 end
 
+-- ペインの現在ディレクトリ（絶対パス）を取得する
+local function pane_cwd(pane)
+  local uri = pane:get_current_working_dir()
+  if uri == nil then
+    return nil
+  end
+  if type(uri) == "userdata" then
+    return uri.file_path
+  end
+  -- 文字列形式 file://host/path のフォールバック
+  return (uri:gsub("^file://[^/]*", ""))
+end
+
+-- 与えられたパスが PROJECTS_ROOT 配下なら、プロジェクトルート
+-- （host/owner/repo = 深さ3）を返す。そうでなければ nil。
+local function project_root(cwd)
+  local prefix = PROJECTS_ROOT .. "/"
+  if cwd:sub(1, #prefix) ~= prefix then
+    return nil
+  end
+  local parts = {}
+  for p in cwd:sub(#prefix + 1):gmatch("[^/]+") do
+    parts[#parts + 1] = p
+    if #parts == 3 then
+      break
+    end
+  end
+  if #parts < 3 then
+    return nil
+  end
+  return prefix .. table.concat(parts, "/")
+end
+
+-- 新規タブを開く。現在ペインが ghq プロジェクト配下なら
+-- そのプロジェクトルートで、そうでなければ現在ディレクトリで開く。
+function M.spawn_tab(win, pane)
+  local cwd = pane_cwd(pane)
+  local root = cwd and project_root(cwd)
+  if root then
+    win:perform_action(act.SpawnCommandInNewTab({ cwd = root }), pane)
+  else
+    win:perform_action(act.SpawnTab("CurrentPaneDomain"), pane)
+  end
+end
+
 -- 開いている workspace の一覧から選んで切り替える
 -- fuzzy=false（デフォルトモード）なので j/k で移動、/ でファジー検索、Enter で決定
 function M.switch_workspace(win, pane)

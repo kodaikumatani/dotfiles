@@ -34,7 +34,7 @@ function M.apply(config)
     { key = "w", mods = "CMD", action = act.CloseCurrentPane({ confirm = false }) }, -- 閉じる
 
     -- ===== タブ（Cmd+T 新規 / Cmd+Shift+] 次 / Cmd+Shift+[ 前） =====
-    { key = "t", mods = "CMD", action = act.SpawnTab("CurrentPaneDomain") },
+    { key = "t", mods = "CMD", action = wezterm.action_callback(workspace.spawn_tab) },
     { key = "]", mods = "CMD|SHIFT", action = act.ActivateTabRelative(1) },
     { key = "[", mods = "CMD|SHIFT", action = act.ActivateTabRelative(-1) },
   }
