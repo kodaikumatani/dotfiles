@@ -39,6 +39,8 @@ link "$DOTFILES/.config/wezterm"      "$HOME/.config/wezterm"
 link "$DOTFILES/.config/nvim"         "$HOME/.config/nvim"
 link "$DOTFILES/.config/zsh"          "$HOME/.config/zsh"
 link "$DOTFILES/.config/starship.toml" "$HOME/.config/starship.toml"
+link "$DOTFILES/.config/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+link "$DOTFILES/.config/claude/settings.json"         "$HOME/.claude/settings.json"
 
 # zsh から dotfiles の関数を読み込む行を 1 度だけ追記
 ZSHRC="$HOME/.zshrc"
