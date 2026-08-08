@@ -53,8 +53,14 @@ return {
         automatic_enable = true, -- インストール済みサーバーを自動で vim.lsp.enable
       })
 
-      -- 診断をインライン表示
-      vim.diagnostic.config({ virtual_text = true })
+      -- 診断表示：virtual_text は行末に収まらず途切れるので、
+      -- カーソル行だけ virtual_lines（行の下に折り返して全文表示）にする
+      vim.diagnostic.config({
+        virtual_text = false,
+        virtual_lines = { current_line = true },
+        severity_sort = true,
+        underline = true,
+      })
 
       -- LSP がアタッチしたバッファだけに適用（言語非依存）
       vim.api.nvim_create_autocmd("LspAttach", {
