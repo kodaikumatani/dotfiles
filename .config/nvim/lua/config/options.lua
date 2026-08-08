@@ -16,6 +16,11 @@ opt.smartindent = true
 opt.termguicolors = true
 opt.signcolumn = "yes"
 
+-- 補完（Neovim 0.11 ネイティブ LSP 補完 / lspconfig.lua で autotrigger 有効）
+-- noselect を入れないと先頭候補が自動選択・挿入され、入力が勝手に書き換わる
+opt.completeopt = { "menu", "menuone", "noselect", "popup", "fuzzy" }
+opt.pumheight = 10
+
 -- クリップボード共有
 opt.clipboard = "unnamedplus"
 
