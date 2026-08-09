@@ -13,33 +13,72 @@ local WIDTH = 6 -- 同時に見せるファイル数
 -- 表示窓の左端。ウィンドウ毎に jumplist が違うので窓もウィンドウ毎に覚える
 local view_first = {}
 
-local function label(bufnr)
-  local name = vim.api.nvim_buf_get_name(bufnr)
-  if name == "" then
-    return "[No Name]"
-  end
-  return vim.fn.fnamemodify(name, ":t")
+-- 実ファイルのバッファだけを足跡に載せる。neo-tree / help / quickfix /
+-- 端末などは buftype が付く（neo-tree は nofile）ので、これで弾ける
+local function is_file(bufnr)
+  return vim.api.nvim_buf_is_valid(bufnr)
+    and vim.bo[bufnr].buftype == ""
+    and vim.api.nvim_buf_get_name(bufnr) ~= ""
 end
 
+local function label(bufnr)
+  return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
+end
+
+-- 最後にファイルを表示していたウィンドウ。neo-tree や help にフォーカスが
+-- 移っている間は、そちらの jumplist ではなくこのウィンドウの足跡を出す
+local last_file_win = nil
+
 --- jumplist をファイル単位の足跡へ畳む
---- @return { bufnr: integer, current: boolean }[]
+--- @return { bufnr: integer, current: boolean }[], integer 足跡と、その持ち主のウィンドウ
+--- 足跡を出す対象のウィンドウ。ファイル以外にフォーカスがあるときは
+--- ファイルを映しているウィンドウへ回す
+local function resolve_win()
+  local cur = vim.api.nvim_get_current_win()
+  if is_file(vim.api.nvim_win_get_buf(cur)) then
+    last_file_win = cur
+    return cur
+  end
+
+  -- 覚えているウィンドウは「今もファイルを映している」ときだけ使う。
+  -- :help などは分割直後に一瞬だけ元のバッファを映すので、その瞬間に
+  -- 記憶してしまうことがある
+  if
+    last_file_win
+    and vim.api.nvim_win_is_valid(last_file_win)
+    and is_file(vim.api.nvim_win_get_buf(last_file_win))
+  then
+    return last_file_win
+  end
+
+  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if is_file(vim.api.nvim_win_get_buf(w)) then
+      last_file_win = w
+      return w
+    end
+  end
+  return cur
+end
+
 local function trail()
-  local list, curidx = unpack(vim.fn.getjumplist())
+  local win = resolve_win()
+  local winnr = vim.fn.win_id2win(win)
+  local list, curidx = unpack(vim.fn.getjumplist(winnr))
 
   local seq = {}
   for _, jump in ipairs(list) do
     seq[#seq + 1] = { bufnr = jump.bufnr, current = false }
   end
   if curidx >= #list then
-    seq[#seq + 1] = { bufnr = vim.api.nvim_get_current_buf(), current = true }
+    seq[#seq + 1] = { bufnr = vim.api.nvim_win_get_buf(win), current = true }
   elseif seq[curidx + 1] then
     seq[curidx + 1].current = true
   end
 
-  -- 同一ファイル内のジャンプは1つにまとめる（消えたバッファは捨てる）
+  -- 同一ファイル内のジャンプは1つにまとめる（ファイル以外と消えたバッファは捨てる）
   local out = {}
   for _, entry in ipairs(seq) do
-    if vim.api.nvim_buf_is_valid(entry.bufnr) then
+    if is_file(entry.bufnr) then
       local last = out[#out]
       if last and last.bufnr == entry.bufnr then
         last.current = last.current or entry.current
@@ -48,12 +87,20 @@ local function trail()
       end
     end
   end
-  return out
+
+  -- 現在地がファイル以外だと印が付かないので（:terminal など）、
+  -- 戻り先になる最後の足跡に付けておく
+  if #out > 0 and not vim.iter(out):any(function(e)
+    return e.current
+  end) then
+    out[#out].current = true
+  end
+
+  return out, win
 end
 
 --- 表示窓の左端を返す。窓の内側で動いている間は動かさず、端に達したときだけずらす
-local function window_start(cur, total)
-  local win = vim.api.nvim_get_current_win()
+local function window_start(win, cur, total)
   local first = view_first[win] or 1
 
   if total <= WIDTH then
@@ -71,7 +118,7 @@ local function window_start(cur, total)
 end
 
 function M.render()
-  local items = trail()
+  local items, win = trail()
   if #items == 0 then
     return "%#TabLineFill#"
   end
@@ -83,7 +130,7 @@ function M.render()
     end
   end
 
-  local first = window_start(cur, #items)
+  local first = window_start(win, cur, #items)
   local last = math.min(#items, first + WIDTH - 1)
 
   local parts = {}
