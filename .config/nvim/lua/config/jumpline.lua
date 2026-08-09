@@ -29,30 +29,25 @@ end
 -- 移っている間は、そちらの jumplist ではなくこのウィンドウの足跡を出す
 local last_file_win = nil
 
---- jumplist をファイル単位の足跡へ畳む
---- @return { bufnr: integer, current: boolean }[], integer 足跡と、その持ち主のウィンドウ
---- 足跡を出す対象のウィンドウ。ファイル以外にフォーカスがあるときは
---- ファイルを映しているウィンドウへ回す
+--- 足跡を出す対象のウィンドウ。現在のウィンドウ → 最後に覚えたウィンドウ →
+--- このタブページのどれか、の順にファイルを映しているものを探す。
+--- 覚えているウィンドウを毎回検証し直すのは、:help などが分割直後に一瞬だけ
+--- 元のバッファを映し、その瞬間を記憶してしまうことがあるため
 local function resolve_win()
   local cur = vim.api.nvim_get_current_win()
-  if is_file(vim.api.nvim_win_get_buf(cur)) then
-    last_file_win = cur
-    return cur
-  end
-
-  -- 覚えているウィンドウは「今もファイルを映している」ときだけ使う。
-  -- :help などは分割直後に一瞬だけ元のバッファを映すので、その瞬間に
-  -- 記憶してしまうことがある
-  if
-    last_file_win
-    and vim.api.nvim_win_is_valid(last_file_win)
-    and is_file(vim.api.nvim_win_get_buf(last_file_win))
-  then
-    return last_file_win
-  end
-
-  for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    if is_file(vim.api.nvim_win_get_buf(w)) then
+  local tab = vim.api.nvim_get_current_tabpage()
+  -- last_file_win が nil なら長さ1の { cur } になり、list_extend は index 2 から
+  -- 詰めるので穴は開かない。よって以下で w の nil を見る必要はない
+  local wins = { cur, last_file_win }
+  vim.list_extend(wins, vim.api.nvim_tabpage_list_wins(tab))
+  for _, w in ipairs(wins) do
+    -- 別タブページの窓に対して getjumplist() は空を返すので現在のタブに限る。
+    -- last_file_win はタブを跨いで生き残るため、ここで弾く必要がある
+    if
+      vim.api.nvim_win_is_valid(w)
+      and vim.api.nvim_win_get_tabpage(w) == tab
+      and is_file(vim.api.nvim_win_get_buf(w))
+    then
       last_file_win = w
       return w
     end
@@ -60,56 +55,45 @@ local function resolve_win()
   return cur
 end
 
+--- jumplist をファイル単位の足跡へ畳む
+--- @return integer[] バッファ番号の並び
+--- @return integer 現在地の位置（足跡が空なら意味を持たない）
+--- @return integer 足跡の持ち主のウィンドウ
 local function trail()
   local win = resolve_win()
-  local winnr = vim.fn.win_id2win(win)
-  local list, curidx = unpack(vim.fn.getjumplist(winnr))
+  local list, curidx = unpack(vim.fn.getjumplist(win))
 
-  local seq = {}
-  for _, jump in ipairs(list) do
-    seq[#seq + 1] = { bufnr = jump.bufnr, current = false }
-  end
-  if curidx >= #list then
-    seq[#seq + 1] = { bufnr = vim.api.nvim_win_get_buf(win), current = true }
-  elseif seq[curidx + 1] then
-    seq[curidx + 1].current = true
+  local seq = vim.tbl_map(function(jump)
+    return jump.bufnr
+  end, list)
+  -- 現在位置は curidx == #list のときリストに入っていないので末尾に足す
+  local curpos = math.min(curidx + 1, #seq + 1)
+  if curpos > #seq then
+    seq[curpos] = vim.api.nvim_win_get_buf(win)
   end
 
   -- 同一ファイル内のジャンプは1つにまとめる（ファイル以外と消えたバッファは捨てる）
-  local out = {}
-  for _, entry in ipairs(seq) do
-    if is_file(entry.bufnr) then
-      local last = out[#out]
-      if last and last.bufnr == entry.bufnr then
-        last.current = last.current or entry.current
-      else
-        out[#out + 1] = { bufnr = entry.bufnr, current = entry.current }
+  local out, cur = {}, nil
+  for i, bufnr in ipairs(seq) do
+    if is_file(bufnr) then
+      if out[#out] ~= bufnr then
+        out[#out + 1] = bufnr
+      end
+      if i == curpos then
+        cur = #out
       end
     end
   end
 
-  -- 現在地がファイル以外だと印が付かないので（:terminal など）、
-  -- 戻り先になる最後の足跡に付けておく
-  if #out > 0 and not vim.iter(out):any(function(e)
-    return e.current
-  end) then
-    out[#out].current = true
-  end
-
-  return out, win
+  -- cur が nil なのは現在地がファイル以外のとき（:terminal など）。
+  -- 戻り先になる最後の足跡を現在地とみなす
+  return out, cur or #out, win
 end
 
 --- 表示窓の左端を返す。窓の内側で動いている間は動かさず、端に達したときだけずらす
 local function window_start(win, cur, total)
-  local first = view_first[win] or 1
-
-  if total <= WIDTH then
-    first = 1
-  elseif cur < first then
-    first = cur -- 左端を越えた
-  elseif cur > first + WIDTH - 1 then
-    first = cur - WIDTH + 1 -- 右端を越えた
-  end
+  local first = math.min(view_first[win] or 1, cur) -- 左端を越えた
+  first = math.max(first, cur - WIDTH + 1) -- 右端を越えた
 
   -- 足跡が減った場合に窓が宙に浮かないよう詰める
   first = math.max(1, math.min(first, math.max(1, total - WIDTH + 1)))
@@ -118,16 +102,9 @@ local function window_start(win, cur, total)
 end
 
 function M.render()
-  local items, win = trail()
+  local items, cur, win = trail()
   if #items == 0 then
     return "%#TabLineFill#"
-  end
-
-  local cur = #items
-  for i, entry in ipairs(items) do
-    if entry.current then
-      cur = i
-    end
   end
 
   local first = window_start(win, cur, #items)
@@ -138,8 +115,8 @@ function M.render()
     parts[#parts + 1] = "%#TabLine# … "
   end
   for i = first, last do
-    parts[#parts + 1] = items[i].current and "%#TabLineSel#" or "%#TabLine#"
-    parts[#parts + 1] = " " .. label(items[i].bufnr) .. " "
+    parts[#parts + 1] = i == cur and "%#TabLineSel#" or "%#TabLine#"
+    parts[#parts + 1] = " " .. label(items[i]) .. " "
     if i < last then
       parts[#parts + 1] = "%#TabLine#" .. SEP
     end
@@ -201,7 +178,13 @@ function M.setup()
   vim.api.nvim_create_autocmd("VimEnter", {
     group = group,
     callback = function()
-      vim.cmd("clearjumps")
+      -- clearjumps は現在のウィンドウにしか効かないので、-O/-o/-p で
+      -- 開いた残りのウィンドウにも回る
+      for _, w in ipairs(vim.api.nvim_list_wins()) do
+        vim.api.nvim_win_call(w, function()
+          vim.cmd("clearjumps")
+        end)
+      end
     end,
   })
 
