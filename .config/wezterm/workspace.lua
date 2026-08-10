@@ -97,10 +97,20 @@ end
 
 -- 開いている workspace の一覧から選んで切り替える
 -- fuzzy=false（デフォルトモード）なので j/k で移動、/ でファジー検索、Enter で決定
+--
+-- InputSelector にカーソルの初期位置を渡す手段は無く、必ず先頭が選ばれる。
+-- そのため現在の workspace を先頭に置き、開いた瞬間に現在地が選ばれている
+-- 状態にする（残りは名前順で、開いた順に並びが変わらないようにする）
 function M.switch_workspace(win, pane)
-  local choices = {}
-  for _, name in ipairs(wezterm.mux.get_workspace_names()) do
-    choices[#choices + 1] = { id = name, label = name }
+  local current = wezterm.mux.get_active_workspace()
+  local names = wezterm.mux.get_workspace_names()
+  table.sort(names)
+
+  local choices = { { id = current, label = "● " .. current } }
+  for _, name in ipairs(names) do
+    if name ~= current then
+      choices[#choices + 1] = { id = name, label = "  " .. name }
+    end
   end
   win:perform_action(
     act.InputSelector({
