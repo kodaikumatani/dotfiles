@@ -37,6 +37,7 @@ dotfiles/
 └── .config/
     ├── wezterm/      # ターミナルエミュレータ（多重化内蔵）
     ├── zsh/          # zsh 関数（git → ghq ラッパ）
+    ├── claude/       # Claude Code（~/.claude 配下へ個別にリンク）
     ├── starship.toml # プロンプト
     └── nvim/         # Neovim 設定（下記参照）
 ```
@@ -50,7 +51,7 @@ wezterm/
 ├── wezterm.lua     # エントリ（各モジュールを require して組み立て）
 ├── appearance.lua  # フォント / 配色
 ├── keybinds.lua    # キーバインド
-└── sessions.lua    # ghq + workspace のプロジェクト切り替え
+└── workspace.lua   # ghq + workspace のプロジェクト切り替え
 ```
 
 ### Neovim
@@ -63,6 +64,7 @@ nvim/
     │   ├── options.lua       # vim.opt 系
     │   ├── keymaps.lua       # グローバルキーマップ
     │   ├── autocmds.lua      # autocmd / ユーザーコマンド
+    │   ├── jumpline.lua      # タブライン（jumplist のパンくず表示）
     │   └── lazy.lua          # プラグインマネージャ
     └── plugins/              # 1 ファイル = 1 プラグイン（ファイル名 = プラグイン名）
         ├── kanagawa.lua      # カラースキーム（dragon）
@@ -72,11 +74,26 @@ nvim/
         ├── conform.lua       # フォーマッタ（gofmt / prettier）
         ├── gitsigns.lua      # git 差分表示
         ├── neo-tree.lua      # ファイルツリー
-        ├── lualine.lua       # ステータスライン
-        └── bufferline.lua    # バッファのタブ表示
+        └── lualine.lua       # ステータスライン
 ```
 
-LSP は mason が自動インストールし `mason-lspconfig` が自動有効化する（使う言語は `lspconfig.lua` のサーバー名リストに足すだけ）。補完は Neovim 0.11 ネイティブ（`vim.lsp.completion`、autotrigger）で nvim-cmp は使わない。シンタックスは treesitter、検索は telescope。
+LSP は mason が自動インストールし `mason-lspconfig` が自動有効化する（使う言語は `lspconfig.lua` のサーバー名リストに足すだけ）。シンタックスは treesitter、検索は telescope。
+
+- **補完**: Neovim 0.11 ネイティブ（`vim.lsp.completion`、autotrigger）で nvim-cmp は使わない。`completeopt` に `noselect` を入れて先頭候補を自動選択させない（入れないと入力中に候補が挿入され、打っている文字が勝手に書き換わる）
+- **import**: 保存時に LSP の `source.organizeImports` を実行する。`gofmt` は import を触らないため。対応を advertise しているサーバー（gopls / ts_ls など）にだけ適用する
+- **診断**: カーソル行のみ `virtual_lines` で行の下に展開する。`virtual_text` は行末に収まらず長いエラーが途切れるため
+
+### タブライン（足跡）
+
+タブページを使わないので、タブラインには jumplist の足跡をパンくずで出す。
+
+```
+main.go > hello.go > [world.go] > util.go
+```
+
+`[ ]` が現在地で、`Ctrl+O` / `Ctrl+I` の移動に追従する。同一ファイル内のジャンプは1つに畳み、neo-tree や help などファイル以外のバッファは載せない。表示は固定幅で、現在地が端に達したときだけスクロールする。
+
+足跡は起動時に `clearjumps` してセッション毎にリセットする。`shada` は `'` を必ず含む必要があり、含めると jumplist が保存されるためオプションでは切れない（file mark と changelist は残る）。
 
 ## Shortcuts
 
@@ -97,6 +114,7 @@ LSP は mason が自動インストールし `mason-lspconfig` が自動有効�
 | タブ 新規 / 次 / 前 | `Cmd+T` / `Cmd+Shift+]` / `Cmd+Shift+[` |
 | ペイン移動 | `Ctrl+H/J/K/L` |
 | プロジェクト切替（ghq → workspace） | `Cmd+P` |
+| 開いている workspace 一覧から切替 | `Cmd+S` |
 
 ### Neovim
 
@@ -106,10 +124,12 @@ LSP は mason が自動インストールし `mason-lspconfig` が自動有効�
 | ファイル検索 | `<leader>ff` |
 | テキスト検索 | `<leader>fg` |
 | バッファ / ヘルプ / 履歴 | `<leader>fb` / `fh` / `fr` |
-| 前 / 次のバッファ（タブ） | `Shift+H` / `Shift+L` |
-| バッファを閉じる | `<leader>bd` |
+| 足跡を戻る / 進む | `Ctrl+O` / `Ctrl+I` |
+| 足跡を1つ戻る / 進む（押すたび反転） | `Ctrl+^` |
 
 leader は `Space`。
+
+`Ctrl+^` は Vim 既定の代替ファイル切替ではなく、足跡内の移動に差し替えてある。既定のままだと「新しいジャンプ」として扱われ、重複排除で足跡の並びが組み替わってしまうため。
 
 #### LSP（アタッチ時）
 
@@ -128,4 +148,4 @@ leader は `Space`。
 | `[d` / `]d` | 前 / 次の診断へ | 0.11 既定 |
 | `[D` / `]D` | 最初 / 最後の診断へ | 0.11 既定 |
 
-定義から戻るのは `Ctrl+O`。
+定義から戻るのは `Ctrl+O`。`gd` は jumplist に記録されるので、飛んだ先はタブラインの足跡にも出る。
