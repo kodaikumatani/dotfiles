@@ -60,6 +60,9 @@ return {
         virtual_lines = { current_line = true },
         severity_sort = true,
         underline = true,
+        -- サインは gitsigns（sign_priority = 6）より低くする。優先度の高い方が
+        -- signcolumn の左側を取るので、git の変更バーが常に左端で固定される
+        signs = { priority = 2 },
       })
 
       -- LSP がアタッチしたバッファだけに適用（言語非依存）

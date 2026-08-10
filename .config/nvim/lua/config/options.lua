@@ -14,7 +14,9 @@ opt.smartindent = true
 
 -- 表示
 opt.termguicolors = true
-opt.signcolumn = "yes"
+-- 1桁だと LSP の診断サインが gitsigns の変更サインを押し出してしまう。
+-- 編集した行にはまさに診断が出るので、2桁にして両方を並べる
+opt.signcolumn = "yes:2"
 
 -- 補完（Neovim 0.11 ネイティブ LSP 補完 / lspconfig.lua で autotrigger 有効）
 -- noselect を入れないと先頭候補が自動選択・挿入され、入力が勝手に書き換わる
