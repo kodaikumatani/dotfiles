@@ -11,7 +11,21 @@ function M.apply(config)
 
   config.keys = {
     -- ===== 基本 =====
-    { key = "c", mods = "CMD", action = act.CopyTo("Clipboard") },
+    -- 選択が無いときの CopyTo は黙って何もしないので、通知して気付けるようにする。
+    -- nvim のようにマウス報告を有効にするアプリのペインでは、ドラッグがアプリ側へ
+    -- 転送されて端末側の選択が作られない（Shift+ドラッグで迂回できる）
+    {
+      key = "c",
+      mods = "CMD",
+      action = wezterm.action_callback(function(window, pane)
+        local sel = window:get_selection_text_for_pane(pane)
+        if sel and sel ~= "" then
+          window:copy_to_clipboard(sel, "Clipboard")
+        else
+          window:toast_notification("WezTerm", "選択がありません（Shift+ドラッグ / Ctrl+Shift+X）", nil, 2000)
+        end
+      end),
+    },
     { key = "v", mods = "CMD", action = act.PasteFrom("Clipboard") },
     { key = "f", mods = "CMD", action = act.Search("CurrentSelectionOrEmptyString") },
     { key = "k", mods = "CMD", action = act.ClearScrollback("ScrollbackOnly") },

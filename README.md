@@ -104,6 +104,7 @@ main.go > hello.go > [world.go] > util.go
 | Action | Key |
 |--------|-----|
 | コピー / ペースト | `Cmd+C` / `Cmd+V` |
+| 選択（マウス報告を使うアプリ上） | `Shift+ドラッグ` |
 | 検索 | `Cmd+F` |
 | スクロールバッククリア | `Cmd+K` |
 | コピーモード（vi 操作） | `Ctrl+Shift+X` |
@@ -115,6 +116,20 @@ main.go > hello.go > [world.go] > util.go
 | ペイン移動 | `Ctrl+H/J/K/L` |
 | プロジェクト切替（ghq → workspace） | `Cmd+P` |
 | 開いている workspace 一覧から切替 | `Cmd+S` |
+
+#### コピーまわり
+
+マウスで選択するとボタンを離した時点でクリップボードへ入る（既定のマウスバインドが `CompleteSelectionOrOpenLinkAtMouseCursor`）。`Cmd+C` は選択済みのものを改めてコピーする用。
+
+ただし **nvim のようにマウス報告を有効にするアプリのペインでは、ドラッグがアプリ側へ転送されて端末の選択が作られない**（nvim は既定の `mouse=nvi` で `?1002h` / `?1006h` を出す）。この場合は次のどれかを使う。
+
+| やりたいこと | 方法 |
+|--------------|------|
+| 端末側で選択する | `Shift+ドラッグ`（`bypass_mouse_reporting_modifiers` の既定が `SHIFT`） |
+| nvim の中身をコピー | `y`（`clipboard=unnamedplus` でシステムのクリップボードに入る） |
+| キーボードだけで選択 | `Ctrl+Shift+X`（copy mode） |
+
+選択が無い状態で `Cmd+C` を押すと、黙って無視される代わりに通知が出る。
 
 ### Neovim
 
