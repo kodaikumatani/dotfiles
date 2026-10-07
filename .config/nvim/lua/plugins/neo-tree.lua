@@ -10,6 +10,17 @@ return {
   opts = {
     window = {
       position = "float",
+      mappings = {
+        ["Y"] = "copy_path",
+      },
+    },
+    commands = {
+      -- カーソル下のノードの相対パスをシステムのクリップボードへ入れる
+      copy_path = function(state)
+        local path = vim.fn.fnamemodify(state.tree:get_node():get_id(), ":.")
+        vim.fn.setreg("+", path)
+        vim.notify("コピーしました: " .. path)
+      end,
     },
     -- ターミナルなど特定のウィンドウを置き換えない
     open_files_do_not_replace_types = { "terminal", "trouble", "qf" },

@@ -136,6 +136,7 @@ main.go > hello.go > [world.go] > util.go
 | Action | Key |
 |--------|-----|
 | ファイルツリー | `<leader>e` |
+| ツリー上の相対パスをコピー | `Y`（ツリー内） |
 | ファイル検索 | `<leader>ff` |
 | テキスト検索 | `<leader>fg` |
 | バッファ / ヘルプ / 履歴 | `<leader>fb` / `fh` / `fr` |
