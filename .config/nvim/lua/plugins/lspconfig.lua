@@ -56,6 +56,8 @@ return {
       -- 診断表示：virtual_text は行末に収まらず途切れるので、
       -- カーソル行だけ virtual_lines（行の下に折り返して全文表示）にする
       vim.diagnostic.config({
+        -- 既定（false）だと Insert 中は診断が更新されず、直したエラーが InsertLeave まで残る
+        update_in_insert = true,
         virtual_text = false,
         virtual_lines = { current_line = true },
         severity_sort = true,
